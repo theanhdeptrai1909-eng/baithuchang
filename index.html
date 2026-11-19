@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký thẻ thành viên</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-white">
+
+  <div class="container py-5" style="max-width: 650px;">
+    <h1 class="mb-4 fw-normal">Đăng ký thẻ thành viên</h1>
+
+    <div id="successAlert" class="alert alert-success d-none" role="alert"></div>
+
+    <form id="registerForm" novalidate>
+      <div class="mb-3">
+        <label for="fullName" class="form-label">Họ và tên</label>
+        <input type="text" class="form-control" id="fullName" name="fullName">
+        <div class="invalid-feedback" id="fullNameError"></div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="text" class="form-control" id="email" name="email">
+        <div class="invalid-feedback" id="emailError"></div>
+      </div>
+
+      <div class="mb-3">
+        <label for="phone" class="form-label">Số điện thoại</label>
+        <input type="text" class="form-control" id="phone" name="phone">
+        <div class="invalid-feedback" id="phoneError"></div>
+      </div>
+
+      <div class="mb-4">
+        <label for="guests" class="form-label">Số khách thường đi cùng</label>
+        <input type="text" class="form-control" id="guests" name="guests">
+        <div class="invalid-feedback" id="guestsError"></div>
+      </div>
+
+      <button type="submit" class="btn btn-danger px-3">Đăng ký</button>
+    </form>
+  </div>
+
+  <script>
+    const registerForm = document.getElementById('registerForm');
+    const successAlert = document.getElementById('successAlert');
+
+    const fullNameInput = document.getElementById('fullName');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
+    const guestsInput = document.getElementById('guests');
+
+    function setFieldValidation(inputElement, errorElementId, errorMessage) {
+      const errorElement = document.getElementById(errorElementId);
+      if (errorMessage) {
+        inputElement.classList.add('is-invalid');
+        errorElement.textContent = errorMessage;
+        return false;
+      } else {
+        inputElement.classList.remove('is-invalid');
+        errorElement.textContent = '';
+        return true;
+      }
+    }
+
+    registerForm.addEventListener('submit', function (event) {
+      event.preventDefault(); // Ngăn tải lại trang
+
+      successAlert.classList.add('d-none');
+      successAlert.textContent = '';
+
+      const fullName = fullNameInput.value.trim();
+      const email = emailInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const guestsRaw = guestsInput.value.trim();
+
+      let fullNameMsg = '';
+      if (fullName === '') {
+        fullNameMsg = 'Vui lòng nhập họ và tên.';
+      } else if (fullName.length < 3) {
+        fullNameMsg = 'Họ và tên phải có tối thiểu 3 ký tự.';
+      }
+      const isNameValid = setFieldValidation(fullNameInput, 'fullNameError', fullNameMsg);
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      let emailMsg = '';
+      if (email === '') {
+        emailMsg = 'Vui lòng nhập địa chỉ email.';
+      } else if (!emailRegex.test(email)) {
+        emailMsg = 'Email không đúng định dạng (ví dụ: ten@domain.com).';
+      }
+      const isEmailValid = setFieldValidation(emailInput, 'emailError', emailMsg);
+
+      const phoneRegex = /^0\d{9}$/;
+      let phoneMsg = '';
+      if (phone === '') {
+        phoneMsg = 'Vui lòng nhập số điện thoại.';
+      } else if (!phoneRegex.test(phone)) {
+        phoneMsg = 'Số điện thoại phải gồm đúng 10 chữ số và bắt đầu bằng số 0.';
+      }
+      const isPhoneValid = setFieldValidation(phoneInput, 'phoneError', phoneMsg);
+
+      const integerRegex = /^\d+$/;
+      let guestsMsg = '';
+      if (guestsRaw === '') {
+        guestsMsg = 'Vui lòng nhập số khách thường đi cùng.';
+      } else if (!integerRegex.test(guestsRaw)) {
+        guestsMsg = 'Số khách phải là một số nguyên hợp lệ.';
+      } else {
+        const guestsNumber = Number(guestsRaw);
+        if (guestsNumber < 0 || guestsNumber > 20) {
+          guestsMsg = 'Số khách thường đi cùng phải nằm trong khoảng từ 0 đến 20.';
+        }
+      }
+      const isGuestsValid = setFieldValidation(guestsInput, 'guestsError', guestsMsg);
+
+      if (isNameValid && isEmailValid && isPhoneValid && isGuestsValid) {
+        successAlert.textContent = `Cảm ơn ${fullName} đã đăng ký thẻ thành viên Món Nghệ!`;
+        successAlert.classList.remove('d-none');
+
+        registerForm.reset();
+        [fullNameInput, emailInput, phoneInput, guestsInput].forEach(input => {
+          input.classList.remove('is-invalid');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
